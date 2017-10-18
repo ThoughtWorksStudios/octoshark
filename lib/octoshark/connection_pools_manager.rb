@@ -28,6 +28,17 @@ module Octoshark
       self.class.connection_managers << self
     end
 
+    def add(name, config)
+      @configs[name] ||= config
+      @connection_pools[name] ||= create_connection_pool(name, config)
+    end
+
+    def remove(name)
+      if @configs.delete(name)
+        @connection_pools.delete(name).disconnect!
+      end
+    end
+
     def reset!
       disconnect!
       setup_connection_pools
